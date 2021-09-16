@@ -1,11 +1,11 @@
 #include <fmt/format.h>
-#include <greeter/greeter.h>
+#include <ascli/ascli.h>
 
-using namespace greeter;
+using namespace ascli;
 
-Greeter::Greeter(std::string _name) : name(std::move(_name)) {}
+AsCli::AsCli(std::string _name) : name(std::move(_name)) {}
 
-std::string Greeter::greet(LanguageCode lang) const {
+std::string AsCli::greet(LanguageCode lang) const {
   switch (lang) {
     default:
     case LanguageCode::EN:
