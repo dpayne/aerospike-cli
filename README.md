@@ -3,9 +3,9 @@
 Use the following command to build and run the executable target.
 
 ```bash
-cmake -S standalone -B build/standalone
-cmake --build build/standalone
-./build/standalone/Greeter --help
+cmake -S main -B build/main
+cmake --build build/main
+./build/main/ascli --help
 ```
 
 ### Build and run test suite
@@ -18,7 +18,7 @@ cmake --build build/test
 CTEST_OUTPUT_ON_FAILURE=1 cmake --build build/test --target test
 
 # or simply call the executable: 
-./build/test/GreeterTests
+./build/test/ascliTests
 ```
 
 To collect code coverage information, run CMake with the `-DENABLE_TEST_COVERAGE=1` option.
@@ -46,7 +46,7 @@ The documentation is automatically built and [published](https://thelartians.git
 To manually build documentation, call the following command.
 
 ```bash
-cmake -S documentation -B build/doc
+cmake -S docs -B build/doc
 cmake --build build/doc --target GenerateDocs
 # view the docs
 open build/doc/doxygen/html/index.html
@@ -64,11 +64,11 @@ cmake -S all -B build
 cmake --build build
 
 # run tests
-./build/test/GreeterTests
+./build/test/ascliTests
 # format code
 cmake --build build --target fix-format
-# run standalone
-./build/standalone/Greeter --help
+# run main
+./build/main/ascli --help
 # build docs
 cmake --build build --target GenerateDocs
 ```
