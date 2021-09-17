@@ -1,31 +1,48 @@
 #pragma once
 
 #include <string>
+#include <aerospike/aerospike.h>
+#include <aerospike/as_config.h>
+#include <cli/cli.h>
+#include <cli/clifilesession.h>
+#include <cli/clilocalsession.h>
+#include <cli/loopscheduler.h>
 
 namespace ascli {
 
-  /**  Language codes to be used with the AsCli class */
-  enum class LanguageCode { EN, DE, ES, FR };
+/**
+ * @brief Aerospike cli
+ */
+class AsCli {
+   private:
+    std::string m_host;
+    uint32_t m_port{};
+    std::string m_user;
+    std::string m_pass;
 
-  /**
-   * @brief A class for saying hello in multiple languages
-   */
-  class AsCli {
-    std::string name;
+    cli::LoopScheduler m_scheduler;
+    cli::Cli m_cli;
 
-  public:
+    as_config m_config;
+    aerospike m_aerospike;
+
+    auto get_menu(cli::LoopScheduler* scheduler, aerospike * as) const -> std::unique_ptr<cli::Menu>;
+
+    auto setup_aerospike(as_config * config, aerospike * as) const -> bool;
+
+   public:
     /**
      * @brief Creates a new ascli
-     * @param name the name to ascli
+     * @param host hostname of the aerospike server
+     * @param port port of the aerospike server
+     * @param pass password of the aerospike server
      */
-    AsCli(std::string name);
+    AsCli(std::string host, uint32_t port, std::string user, std::string pass);
 
     /**
-     * @brief Creates a localized string containing the greeting
-     * @param lang the language to greet in
-     * @return a string containing the greeting
+     * @brief Starts aerospike cli
      */
-    std::string greet(LanguageCode lang = LanguageCode::EN) const;
-  };
+    auto start() -> void;
+};
 
 }  // namespace ascli

@@ -19,19 +19,11 @@ if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
 endif()
 
 # ---- Add dependencies via CPM ----
-# see https://github.com/TheLartians/CPM.cmake for more info
 
-include(cmake/CPM.cmake)
-
-# PackageProject.cmake will be used to make our target installable
-CPMAddPackage("gh:TheLartians/PackageProject.cmake@1.6.0")
-
-CPMAddPackage(
-  NAME fmt
-  GIT_TAG 7.1.3
-  GITHUB_REPOSITORY fmtlib/fmt
-  OPTIONS "FMT_INSTALL YES" # create an installable target
-)
+set(EXTERNAL_PROJECTS_DIR ${CMAKE_BINARY_DIR}/_deps)
+include_directories(${EXTERNAL_PROJECTS_DIR}/include)
+link_directories(${EXTERNAL_PROJECTS_DIR}/lib)
+include(ProjectLibraries.cmake)
 
 # ---- Add source files ----
 
@@ -51,8 +43,14 @@ set_target_properties(${ROOT_PROJECT_NAME} PROPERTIES CXX_STANDARD 17)
 # being a cross-platform target, we enforce standards conformance on MSVC
 target_compile_options(${ROOT_PROJECT_NAME} PUBLIC "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/permissive->")
 
+add_dependencies(${ROOT_PROJECT_NAME} project_libuv project_aerospike)
+
+target_link_directories(
+    ${ROOT_PROJECT_NAME} PRIVATE ${EXTERNAL_PROJECTS_DIR}/lib
+)
+
 # Link dependencies
-target_link_libraries(${ROOT_PROJECT_NAME} PRIVATE fmt::fmt)
+target_link_libraries(${ROOT_PROJECT_NAME} PRIVATE fmt::fmt cli::cli aerospike uv z ssl crypto)
 
 target_include_directories(
     ${ROOT_PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
@@ -75,5 +73,5 @@ packageProject(
   INCLUDE_DESTINATION include/${PROJECT_NAME}-${PROJECT_VERSION}
   VERSION_HEADER "${VERSION_HEADER_LOCATION}"
   COMPATIBILITY SameMajorVersion
-  DEPENDENCIES "fmt 7.1.3"
+  DEPENDENCIES "fmt 7.1.3" "cli 2.0.0"
 )

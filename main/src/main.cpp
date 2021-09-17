@@ -6,48 +6,40 @@
 #include <string>
 #include <unordered_map>
 
+#include <cli/cli.h>
+
 auto main(int argc, char** argv) -> int {
-  const std::unordered_map<std::string, ascli::LanguageCode> languages{
-      {"en", ascli::LanguageCode::EN},
-      {"de", ascli::LanguageCode::DE},
-      {"es", ascli::LanguageCode::ES},
-      {"fr", ascli::LanguageCode::FR},
-  };
+    cxxopts::Options options(*argv, "aerospike cli client");
 
-  cxxopts::Options options(*argv, "A program to welcome the world!");
+    // clang-format off
+    options.add_options()
+        ("h,help", "Show help")
+        ("o,host", "Server (default 127.0.0.1)", cxxopts::value<std::string>()->default_value("127.0.0.1"))
+        ("p,port", "port", cxxopts::value<uint32_t>()->default_value("3000"))
+        ("u,user", "user", cxxopts::value<std::string>()->default_value(""))
+        ("a,pass", "password", cxxopts::value<std::string>()->default_value(""))
+        ("v,version", "Print the current version number");
+    // clang-format on
 
-  std::string language;
-  std::string name;
+    auto result = options.parse(argc, argv);
 
-  // clang-format off
-  options.add_options()
-    ("h,help", "Show help")
-    ("v,version", "Print the current version number")
-    ("n,name", "Name to greet", cxxopts::value(name)->default_value("World"))
-    ("l,lang", "Language code to use", cxxopts::value(language)->default_value("en"))
-  ;
-  // clang-format on
+    if (result["help"].as<bool>()) {
+        std::cout << options.help() << std::endl;
+        return 0;
+    }
 
-  auto result = options.parse(argc, argv);
+    if (result["version"].as<bool>()) {
+        std::cout << "AsCli, version " << ASCLI_VERSION << std::endl;
+        return 0;
+    }
 
-  if (result["help"].as<bool>()) {
-    std::cout << options.help() << std::endl;
+    auto host = result["host"].as<std::string>();
+    auto port = result["port"].as<uint32_t>();
+    auto user = result["user"].as<std::string>();
+    auto pass = result["pass"].as<std::string>();
+
+    ascli::AsCli ascli(host, port, user, pass);
+    ascli.start();
+
     return 0;
-  }
-
-  if (result["version"].as<bool>()) {
-    std::cout << "AsCli, version " << ASCLI_VERSION << std::endl;
-    return 0;
-  }
-
-  auto langIt = languages.find(language);
-  if (langIt == languages.end()) {
-    std::cerr << "unknown language code: " << language << std::endl;
-    return 1;
-  }
-
-  ascli::AsCli ascli(name);
-  std::cout << ascli.greet(langIt->second) << std::endl;
-
-  return 0;
 }

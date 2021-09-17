@@ -1,0 +1,9 @@
+Checks:          'performance-*,clang-diagnostic-*,clang-analyzer-*,modernize-*,readability-*,misc-*,cppcoreguidelines-*'
+WarningsAsErrors: ''
+HeaderFilterRegex: '*.h'
+AnalyzeTemporaryDtors: false
+CheckOptions:
+  - key:             google-build-namespaces.HeaderFileExtensions
+    value:           h,hh,hpp,hxx
+  - key:             google-global-names-in-headers.HeaderFileExtensions
+    value:           h

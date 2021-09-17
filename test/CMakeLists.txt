@@ -24,17 +24,20 @@ else()
   CPMAddPackage(NAME ${ROOT_PROJECT_NAME} SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/..)
 endif()
 
+include_directories(${CMAKE_BINARY_DIR}/_deps/include)
+link_directories(${CMAKE_BINARY_DIR}/_deps/lib)
+
 # ---- Create binary ----
 
 file(GLOB sources CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 add_executable(${PROJECT_NAME} ${sources})
-target_link_libraries(${PROJECT_NAME} doctest::doctest ${ROOT_PROJECT_NAME}::${ROOT_PROJECT_NAME})
+target_link_libraries(${PROJECT_NAME} doctest::doctest ${ROOT_PROJECT_NAME}::${ROOT_PROJECT_NAME} cli::cli dl)
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 17)
 
 # enable compiler warnings
 if(NOT TEST_INSTALLED_VERSION)
   if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-    target_compile_options(${PROJECT_NAME} PUBLIC -Wall -Wpedantic -Wextra -Werror)
+    target_compile_options(${PROJECT_NAME} PUBLIC -Wall -Wpedantic -Wextra)
   elseif(MSVC)
     target_compile_options(${PROJECT_NAME} PUBLIC /W4 /WX)
     target_compile_definitions(${PROJECT_NAME}Tests PUBLIC DOCTEST_CONFIG_USE_STD_HEADERS)

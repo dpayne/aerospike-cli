@@ -6,13 +6,6 @@
 
 TEST_CASE("AsCli") {
   using namespace ascli;
-
-  AsCli ascli("Tests");
-
-  CHECK(ascli.greet(LanguageCode::EN) == "Hello, Tests!");
-  CHECK(ascli.greet(LanguageCode::DE) == "Hallo Tests!");
-  CHECK(ascli.greet(LanguageCode::ES) == "¡Hola Tests!");
-  CHECK(ascli.greet(LanguageCode::FR) == "Bonjour Tests!");
 }
 
 TEST_CASE("AsCli version") {
