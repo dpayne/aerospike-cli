@@ -29,7 +29,7 @@ auto main(int argc, char** argv) -> int {
     }
 
     if (result["version"].as<bool>()) {
-        std::cout << "AsCli, version " << ASCLI_VERSION << std::endl;
+        std::cout << "AsCli, version " << ASCLILIB_VERSION << std::endl;
         return 0;
     }
 

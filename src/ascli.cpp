@@ -1,49 +1,35 @@
 #include <ascli/ascli.h>
 #include <fmt/format.h>
 
-#include <aerospike/aerospike_batch.h>
-#include <aerospike/aerospike_key.h>
-#include <aerospike/aerospike_scan.h>
+#include <aerospike/as_event.h>
 #include <aerospike/as_policy.h>
-#include <aerospike/as_record.h>
-#include <aerospike/as_record_iterator.h>
 
 #include <uv.h>
 
 using namespace ascli;
 
 AsCli::AsCli(std::string host, uint32_t port, std::string user, std::string pass)
-    : m_host{std::move(host)}, m_port{port}, m_user{std::move(user)}, m_pass{std::move(pass)}, m_scheduler{}, m_cli{get_menu(&m_scheduler, &m_aerospike)} {}
+    : m_host{std::move(host)},
+      m_port{port},
+      m_user{std::move(user)},
+      m_pass{std::move(pass)},
+      m_scheduler{},
+      m_cli{get_menu(&m_scheduler, &m_aerospike)} {}
 
-auto AsCli::get_menu(cli::LoopScheduler* scheduler, aerospike * as) const -> std::unique_ptr<cli::Menu> {
+AsCli::~AsCli() {
+    if (m_is_aerospike_initialized) {
+        aerospike_destroy(&m_aerospike);
+    }
+}
+
+auto AsCli::get_menu(cli::LoopScheduler* scheduler, aerospike* as) const -> std::unique_ptr<cli::Menu> {
     auto rootMenu = std::make_unique<cli::Menu>("cli");
 
     rootMenu->Insert(
         "get",
-        [as,scheduler](std::ostream& out, std::string ns, std::string set, std::string key) {
+        [as, scheduler, aerospike_operator = &m_aerospike_operator](std::ostream& out, std::string ns, std::string set, std::string key) {
             out << "The answer is: " << key << "\n";
-            as_error err;
-            as_record* p_rec = nullptr;
-            as_key akey;
-            as_key_init_str(&akey, ns.c_str(), set.c_str(), key.c_str());
-
-            // Read the test record from the database.
-            if (aerospike_key_get(as, &err, nullptr, &akey, &p_rec) != AEROSPIKE_OK) {
-                std::cerr << "aerospike_key_get() returned " << err.code << " " << err.message << std::endl;
-                return;
-            }
-
-            // If we didn't get an as_record object back, something's wrong.
-            if (p_rec == nullptr) {
-                std::cerr << "aerospike_key_get() retrieved null as_record object" << std::endl;
-                return;
-            }
-
-            // Log the result.
-            out << ("record was successfully read from database:") << std::endl;
-
-            // Destroy the as_record object.
-            as_record_destroy(p_rec);
+            aerospike_operator->get(ns, set, key, as, out);
         },
         "Get key from aerospike");
 
@@ -67,6 +53,7 @@ auto AsCli::start() -> void {
         std::cerr << "Failed to initialize aerospike";
         return;
     }
+    m_is_aerospike_initialized = true;
 
     m_scheduler.Run();
 }

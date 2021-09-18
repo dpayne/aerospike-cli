@@ -1,14 +1,4 @@
-cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
-
-project(${ROOT_PROJECT_NAME}Main LANGUAGES CXX)
-
-# --- Import tools ----
-
-include(../cmake/tools.cmake)
-
-# ---- Dependencies ----
-
-include(../cmake/CPM.cmake)
+# --- Import dependencies ----
 
 CPMAddPackage(
   GITHUB_REPOSITORY jarro2783/cxxopts
@@ -16,17 +6,12 @@ CPMAddPackage(
   OPTIONS "CXXOPTS_BUILD_EXAMPLES NO" "CXXOPTS_BUILD_TESTS NO" "CXXOPTS_ENABLE_INSTALL YES"
 )
 
-CPMAddPackage(NAME ${ROOT_PROJECT_NAME} SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/..)
-
 # ---- Create standalone executable ----
 
 file(GLOB sources CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 
-add_executable(${PROJECT_NAME} ${sources})
+add_executable(${PROJECT_MAIN_NAME} ${sources})
 
-include_directories(${CMAKE_BINARY_DIR}/_deps/include)
-link_directories(${CMAKE_BINARY_DIR}/_deps/lib)
+set_target_properties(${PROJECT_MAIN_NAME} PROPERTIES CXX_STANDARD 17 OUTPUT_NAME "${PROJECT_MAIN_NAME}")
 
-set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 17 OUTPUT_NAME "${PROJECT_NAME}")
-
-target_link_libraries(${PROJECT_NAME} ${ROOT_PROJECT_NAME}::${ROOT_PROJECT_NAME} cxxopts cli::cli dl)
+target_link_libraries(${PROJECT_MAIN_NAME} ${PROJECT_NAME}::${PROJECT_LIB_NAME} cxxopts cli::cli dl)

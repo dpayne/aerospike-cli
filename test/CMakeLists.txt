@@ -24,9 +24,6 @@ else()
   CPMAddPackage(NAME ${ROOT_PROJECT_NAME} SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/..)
 endif()
 
-include_directories(${CMAKE_BINARY_DIR}/_deps/include)
-link_directories(${CMAKE_BINARY_DIR}/_deps/lib)
-
 # ---- Create binary ----
 
 file(GLOB sources CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)

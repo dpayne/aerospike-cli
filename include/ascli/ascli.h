@@ -7,6 +7,7 @@
 #include <cli/clifilesession.h>
 #include <cli/clilocalsession.h>
 #include <cli/loopscheduler.h>
+#include <ascli/AerospikeOperator.h>
 
 namespace ascli {
 
@@ -25,6 +26,9 @@ class AsCli {
 
     as_config m_config;
     aerospike m_aerospike;
+    bool m_is_aerospike_initialized{false};
+
+    AerospikeOperator m_aerospike_operator;
 
     auto get_menu(cli::LoopScheduler* scheduler, aerospike * as) const -> std::unique_ptr<cli::Menu>;
 
@@ -38,6 +42,7 @@ class AsCli {
      * @param pass password of the aerospike server
      */
     AsCli(std::string host, uint32_t port, std::string user, std::string pass);
+    virtual ~AsCli();
 
     /**
      * @brief Starts aerospike cli
