@@ -7,6 +7,7 @@
 #include <ascli/Operators/AerospikeGetOperator.h>
 #include <ascli/Operators/AerospikeDeleteOperator.h>
 #include <ascli/Operators/AerospikeQueryOperator.h>
+#include <ascli/Operators/AerospikeScanOperator.h>
 #include <ascli/Operators/AerospikeOperator.h>
 #include <ascli/Operators/AerospikePutOperator.h>
 
@@ -43,6 +44,7 @@ auto AsCli::get_menu(aerospike* as) const -> std::unique_ptr<cli::Menu> {
     setup_put_ops(as, rootMenu.get());
     setup_delete_ops(as, rootMenu.get());
     setup_query_ops(as, rootMenu.get());
+    setup_scan_ops(as, rootMenu.get());
 
     auto subMenu = std::make_unique<cli::Menu>("aql");
     rootMenu->Insert(std::move(subMenu));
@@ -176,4 +178,15 @@ auto AsCli::setup_query_ops(aerospike* as, cli::Menu* menu) const -> void {
             op.query();
         },
         "query set in aerospike");
+}
+
+auto AsCli::setup_scan_ops(aerospike* as, cli::Menu* menu) const -> void {
+    menu->Insert(
+        "scan",
+        [as](std::ostream& out, std::string ns, std::string set) {
+            AeroOperatorIn opIn = {.ns = std::move(ns), .set = std::move(set), .out = out, .as = as};
+            AerospikeScanOperator op(std::move(opIn));
+            op.scan();
+        },
+        "scan set in aerospike");
 }

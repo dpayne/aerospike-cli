@@ -28,7 +28,7 @@ set_property(TARGET uv PROPERTY IMPORTED_LOCATION ${EXTERNAL_PROJECTS_DIR}/lib/$
 ExternalProject_Add(project_aerospike
   PREFIX ${EXTERNAL_PROJECTS_DIR}
   GIT_REPOSITORY "git@github.com:aerospike/aerospike-client-c.git"
-  GIT_TAG 4.2.1.2
+  GIT_TAG 5.2.3
   DEPENDS project_libuv
   UPDATE_COMMAND ""
   CONFIGURE_COMMAND ""
