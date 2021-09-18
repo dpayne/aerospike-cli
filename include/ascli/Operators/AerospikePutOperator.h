@@ -1,3 +1,5 @@
+#pragma once
+
 #include <aerospike/aerospike_key.h>
 #include <aerospike/as_record.h>
 #include <aerospike/as_record_iterator.h>

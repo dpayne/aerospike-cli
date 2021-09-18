@@ -33,7 +33,7 @@ class AsCli {
 
     auto setup_put_ops(aerospike * as, cli::Menu * menu) const -> void;
 
-    auto setup_scan_ops(aerospike* as, cli::Menu* menu) const -> void;
+    auto setup_delete_ops(aerospike* as, cli::Menu* menu) const -> void;
 
     auto setup_aerospike(as_config * config, aerospike * as) const -> bool;
 

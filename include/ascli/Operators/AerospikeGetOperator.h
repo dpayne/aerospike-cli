@@ -1,3 +1,5 @@
+#pragma once
+
 #include <ascli/Operators/AerospikeOperator.h>
 #include <aerospike/as_record.h>
 

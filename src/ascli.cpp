@@ -5,9 +5,9 @@
 #include <aerospike/as_policy.h>
 #include <ascli/DataTypes.h>
 #include <ascli/Operators/AerospikeGetOperator.h>
+#include <ascli/Operators/AerospikeDeleteOperator.h>
 #include <ascli/Operators/AerospikeOperator.h>
 #include <ascli/Operators/AerospikePutOperator.h>
-#include <ascli/Operators/AerospikeScanOperator.h>
 
 #include <uv.h>
 
@@ -40,7 +40,7 @@ auto AsCli::get_menu(aerospike* as) const -> std::unique_ptr<cli::Menu> {
 
     setup_get_ops(as, rootMenu.get());
     setup_put_ops(as, rootMenu.get());
-    setup_scan_ops(as, rootMenu.get());
+    setup_delete_ops(as, rootMenu.get());
 
     auto subMenu = std::make_unique<cli::Menu>("aql");
     rootMenu->Insert(std::move(subMenu));
@@ -139,15 +139,28 @@ auto AsCli::setup_put_ops(aerospike* as, cli::Menu* menu) const -> void {
             }
         },
         "Put key-value into aerospike with bin");
+    menu->Insert(
+        "put",
+        [as](std::ostream& out, std::string ns, std::string set, std::string key, std::string type, std::string value) {
+            AeroOperatorIn opIn = {.ns = std::move(ns), .set = std::move(set), .key = std::move(key), .bin = "default", .out = out, .as = as};
+            AerospikePutOperator op(std::move(opIn));
+            auto findPair = k_str_to_data_type.find(type);
+            if (findPair == k_str_to_data_type.end()) {
+                std::cerr << "Invalid data type: " << type << ", valid types are [int, double, bool, string, bytes]" << std::endl;
+            } else {
+                op.put(findPair->second, value);
+            }
+        },
+        "Put key-value into aerospike");
 }
 
-auto AsCli::setup_scan_ops(aerospike* as, cli::Menu* menu) const -> void {
+auto AsCli::setup_delete_ops(aerospike* as, cli::Menu* menu) const -> void {
     menu->Insert(
-        "scan",
-        [as](std::ostream& out, std::string ns, std::string set) {
-            AeroOperatorIn opIn = {.ns = std::move(ns), .set = std::move(set), .out = out, .as = as};
-            AerospikeScanOperator op(std::move(opIn));
-            op.scan();
+        "delete",
+        [as](std::ostream& out, std::string ns, std::string set, std::string key) {
+            AeroOperatorIn opIn = {.ns = std::move(ns), .set = std::move(set), .key = key, .out = out, .as = as};
+            AerospikeDeleteOperator op(std::move(opIn));
+            op.del();
         },
-        "Scan set in aerospike");
+        "delete set in aerospike");
 }
