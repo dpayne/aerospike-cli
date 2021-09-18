@@ -3,10 +3,42 @@
 #include <aerospike/as_record_iterator.h>
 #include <ascli/Operators/AerospikeGetOperator.h>
 #include <iostream>
+#include <unordered_map>
 
 using namespace ascli;
 
 AerospikeGetOperator::AerospikeGetOperator(AeroOperatorIn operatorIn) : AerospikeOperator(std::move(operatorIn)) {}
+
+auto AerospikeGetOperator::print_aerospike_type(as_val_t type) -> std::string {
+    switch (type) {
+        case AS_UNKNOWN:
+            return "unknown";
+        case AS_NIL:
+            return "nil";
+        case AS_BOOLEAN:
+            return "boolean";
+        case AS_INTEGER:
+            return "numeric";
+        case AS_STRING:
+            return "string";
+        case AS_BYTES:
+            return "bytes";
+        case AS_DOUBLE:
+            return "decimal";
+        case AS_LIST:
+            return "list";
+        case AS_MAP:
+            return "MAP";
+        case AS_REC:
+            return "rec";
+        case AS_PAIR:
+            return "pair";
+        case AS_GEOJSON:
+            return "geojson";
+        default:
+            return "unsupported";
+    }
+}
 
 auto AerospikeGetOperator::get() const -> bool {
     as_error err{};
@@ -27,7 +59,7 @@ auto AerospikeGetOperator::get() const -> bool {
         return false;
     }
 
-    print_record(rec, opIn.out) << std::endl;
+    print_record(rec, opIn.bin, opIn.out) << std::endl;
 
     // Destroy the as_record object.
     as_record_destroy(rec);
@@ -35,21 +67,41 @@ auto AerospikeGetOperator::get() const -> bool {
     return true;
 }
 
-auto AerospikeGetOperator::print_record(const as_record* rec, std::ostream& out) -> std::ostream & {
+auto AerospikeGetOperator::print_record(const as_record* rec, const std::string& bin_name, std::ostream& out) -> std::ostream& {
     out << "{"
         << "\"gen\":" << rec->gen << ", "
         << "\"ttl\":" << rec->ttl << ", "
         << "\"bins\":[";
     as_record_iterator it;
     as_record_iterator_init(&it, rec);
-    while(as_record_iterator_has_next(&it))
-    {
+    while (as_record_iterator_has_next(&it)) {
         auto bin = as_record_iterator_next(&it);
-        out << as_val_tostring(bin);
+        if (!bin_name.empty()) {
+            if (strncmp(bin->name, bin_name.c_str(), bin_name.size()) != 0) {
+                continue;
+            }
+        }
+        print_bin(bin, out);
     }
     out << "]";
     out << "}";
     as_record_iterator_destroy(&it);
+
+    return out;
+}
+
+auto AerospikeGetOperator::print_bin(const as_bin* bin, std::ostream& out) -> std::ostream& {
+    auto value = as_bin_get_value(bin);
+    auto val = (as_val*)value;
+    auto val_str = as_val_tostring(val);
+
+    out << "{"
+        << "\"name\": \"" << bin->name << "\", ";
+    out << "\"type\": \"" << print_aerospike_type(val->type) << "\", ";
+    out << "\"value\": " << val_str;
+    out << "}";
+
+    free(val_str);
 
     return out;
 }

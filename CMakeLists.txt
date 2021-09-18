@@ -46,5 +46,5 @@ if(${ENABLE_TEST})
 endif()
 
 if(${ENABLE_DOCS})
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/docs ${CMAKE_BINARY_DIR}/docs)
+  add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/docs ${CMAKE_BINARY_DIR}/docs)
 endif()

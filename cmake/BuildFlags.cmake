@@ -2,7 +2,7 @@ if(NOT DEFINED BUILD_FLAGS OR BUILD_FLAGS STREQUAL "")
     if (CMAKE_BUILD_TYPE STREQUAL "Release")
         set(BUILD_FLAGS "-msse -msse2 -msse3 -mssse3 -mno-sse4a -maes -mpopcnt -mavx -mavx2 -msse4.2 -msse4.1 -mlzcnt -O2")
     else()
-        set(BUILD_FLAGS "-msse -msse2 -msse3 -mssse3 -mno-sse4a -maes -mpopcnt -mavx -mavx2 -msse4.2 -msse4.1 -mlzcnt")
+        set(BUILD_FLAGS "-msse -msse2 -msse3 -mssse3 -mno-sse4a -maes -mpopcnt -mavx -mavx2 -msse4.2 -msse4.1 -mlzcnt -ggdb -g3")
     endif()
 endif()
 

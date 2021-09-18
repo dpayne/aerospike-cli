@@ -49,7 +49,7 @@ auto AsCli::get_menu(cli::LoopScheduler* scheduler, aerospike* as) const -> std:
 auto AsCli::setup_get_ops(cli::LoopScheduler* scheduler, aerospike* as, cli::Menu* menu) const -> void {
     menu->Insert(
         "get",
-        [as, scheduler](std::ostream& out, std::string ns, std::string set, std::string key, std::string bin) {
+        [as](std::ostream& out, std::string ns, std::string set, std::string key, std::string bin) {
             AeroOperatorIn opIn = {.ns = std::move(ns), .set = std::move(set), .key = std::move(key), .bin = std::move(bin), .out = out, .as = as};
             AerospikeGetOperator op(std::move(opIn));
             op.get();
@@ -57,7 +57,7 @@ auto AsCli::setup_get_ops(cli::LoopScheduler* scheduler, aerospike* as, cli::Men
         "Get key from aerospike with bin");
     menu->Insert(
         "get",
-        [as, scheduler](std::ostream& out, std::string ns, std::string set, std::string key) {
+        [as](std::ostream& out, std::string ns, std::string set, std::string key) {
             AeroOperatorIn opIn = {.ns = std::move(ns), .set = std::move(set), .key = std::move(key), .bin = "", .out = out, .as = as};
             AerospikeGetOperator op(std::move(opIn));
             op.get();
@@ -65,18 +65,18 @@ auto AsCli::setup_get_ops(cli::LoopScheduler* scheduler, aerospike* as, cli::Men
         "Get key from aerospike with bin");
     menu->Insert(
         "get",
-        [as, scheduler](std::ostream& out, std::string ns, std::string set) { std::cerr << "Not enough arguments: " << k_get_usage << std::endl; },
+        [](std::ostream& out, std::string ns, std::string set) { std::cerr << "Not enough arguments: " << k_get_usage << std::endl; },
         "");
     menu->Insert(
-        "get", [as, scheduler](std::ostream& out, std::string ns) { std::cerr << "Not enough arguments: " << k_get_usage << std::endl; }, "");
+        "get", [](std::ostream& out, std::string ns) { std::cerr << "Not enough arguments: " << k_get_usage << std::endl; }, "");
     menu->Insert(
-        "get", [as, scheduler](std::ostream& out) { std::cerr << "Not enough arguments: " << k_get_usage << std::endl; }, "");
+        "get", [](std::ostream& out) { std::cerr << "Not enough arguments: " << k_get_usage << std::endl; }, "");
 }
 
 auto AsCli::setup_put_ops(cli::LoopScheduler* scheduler, aerospike* as, cli::Menu* menu) const -> void {
     menu->Insert(
         "put",
-        [as, scheduler](std::ostream& out, std::string ns, std::string set, std::string key, std::string bin, std::string type, std::string value) {
+        [as](std::ostream& out, std::string ns, std::string set, std::string key, std::string bin, std::string type, std::string value) {
             AeroOperatorIn opIn = {.ns = std::move(ns), .set = std::move(set), .key = std::move(key), .bin = std::move(bin), .out = out, .as = as};
             AerospikePutOperator op(std::move(opIn));
             auto findPair = k_str_to_data_type.find(type);

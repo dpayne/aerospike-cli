@@ -1,6 +1,12 @@
 #include <ascli/Operators/AerospikePutOperator.h>
+#include <chrono>
 
 using namespace ascli;
+
+namespace
+{
+    const std::chrono::seconds k_default_ttl{std::chrono::duration_cast<std::chrono::seconds>(std::chrono::days{1})};
+}
 
 AerospikePutOperator::AerospikePutOperator(AeroOperatorIn operatorIn) : AerospikeOperator(std::move(operatorIn)) {}
 
@@ -8,6 +14,8 @@ auto AerospikePutOperator::put(data_type dt, const std::string& value) const -> 
     as_error err{};
     as_record rec{};
     as_key akey{};
+    as_policy_write write_policy{};
+    as_policy_write_init(&write_policy);
     auto opIn = get_operator_in();
     as_key_init_str(&akey, opIn.ns.c_str(), opIn.set.c_str(), opIn.key.c_str());
 
@@ -31,6 +39,7 @@ auto AerospikePutOperator::put(data_type dt, const std::string& value) const -> 
 
 auto AerospikePutOperator::initialize_record(data_type dt, const std::string& value, as_record* rec) const -> bool {
     as_record_init(rec, 1);
+    rec->ttl = k_default_ttl.count();
     auto opIn = get_operator_in();
     auto bin_name = opIn.bin.empty() ? nullptr : opIn.bin.data();
     auto val = 0L;
