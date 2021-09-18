@@ -68,8 +68,14 @@ auto AerospikeGetOperator::get() const -> bool {
 }
 
 auto AerospikeGetOperator::print_record(const as_record* rec, const std::string& bin_name, std::ostream& out) -> std::ostream& {
-    out << "{"
-        << "\"gen\":" << rec->gen << ", "
+    out << "{";
+    if (rec->key.valuep != nullptr) {
+        auto key_val_as_str = as_val_tostring(rec->key.valuep);
+        out << "\"key\":" << key_val_as_str << ", ";
+        free(key_val_as_str);
+    }
+
+    out << "\"gen\":" << rec->gen << ", "
         << "\"ttl\":" << rec->ttl << ", "
         << "\"bins\":[";
     as_record_iterator it;

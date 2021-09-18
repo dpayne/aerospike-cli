@@ -14,8 +14,13 @@ auto AerospikePutOperator::put(data_type dt, const std::string& value) const -> 
     as_error err{};
     as_record rec{};
     as_key akey{};
+
     as_policy_write write_policy{};
     as_policy_write_init(&write_policy);
+
+    // save key
+    write_policy.key = as_policy_key::AS_POLICY_KEY_SEND;
+
     auto opIn = get_operator_in();
     as_key_init_str(&akey, opIn.ns.c_str(), opIn.set.c_str(), opIn.key.c_str());
 
