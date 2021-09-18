@@ -5,6 +5,9 @@ cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 
 # options
 option(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+option(ENABLE_TEST "Enable unit tests" ON)
+option(ENABLE_DOCS "Enable documentation generation" ON)
+option(ENABLE_MAIN "Enable main executable" ON)
 
 # ---- Project ----
 
@@ -17,6 +20,10 @@ project(
 set(PROJECT_MAIN_NAME ${ROOT_PROJECT_NAME})
 set(PROJECT_LIB_NAME ${ROOT_PROJECT_NAME}Lib)
 set(PROJECT_TEST_NAME ${ROOT_PROJECT_NAME}Test)
+set(PROJECT_DOCS_NAME ${ROOT_PROJECT_NAME}Docs)
+
+# ---- General Compile Time Flags ----
+include(cmake/BuildFlags.cmake)
 
 # ---- Add dependencies via CPM ----
 
@@ -30,6 +37,14 @@ enable_testing()
 
 # My default build all
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/src ${CMAKE_BINARY_DIR}/src)
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/main ${CMAKE_BINARY_DIR}/main)
-# add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/test ${CMAKE_BINARY_DIR}/test)
-# add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/docs ${CMAKE_BINARY_DIR}/docs)
+if(${ENABLE_MAIN})
+  add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/main ${CMAKE_BINARY_DIR}/main)
+endif()
+
+if(${ENABLE_TEST})
+  add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/test ${CMAKE_BINARY_DIR}/test)
+endif()
+
+if(${ENABLE_DOCS})
+    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/docs ${CMAKE_BINARY_DIR}/docs)
+endif()

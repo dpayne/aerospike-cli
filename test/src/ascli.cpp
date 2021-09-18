@@ -9,6 +9,6 @@ TEST_CASE("AsCli") {
 }
 
 TEST_CASE("AsCli version") {
-  static_assert(std::string_view(ASCLI_VERSION) == std::string_view("1.0"));
-  CHECK(std::string(ASCLI_VERSION) == std::string("1.0"));
+  static_assert(std::string_view(ASCLILIB_VERSION) == std::string_view("1.0"));
+  CHECK(std::string(ASCLILIB_VERSION) == std::string("1.0"));
 }

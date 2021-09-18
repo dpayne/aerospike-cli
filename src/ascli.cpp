@@ -3,10 +3,22 @@
 
 #include <aerospike/as_event.h>
 #include <aerospike/as_policy.h>
+#include <ascli/DataTypes.h>
+#include <ascli/Operators/AerospikeGetOperator.h>
+#include <ascli/Operators/AerospikeOperator.h>
+#include <ascli/Operators/AerospikePutOperator.h>
 
 #include <uv.h>
 
 using namespace ascli;
+
+namespace {
+constexpr std::string_view k_get_usage = "get <namespace> <set> <key> <bin>";
+const std::unordered_map<std::string_view, data_type> k_str_to_data_type{
+    {"int", data_type::numeric},   {"long", data_type::numeric}, {"double", data_type::decimal}, {"float", data_type::decimal},
+    {"string", data_type::string}, {"str", data_type::string},   {"bytes", data_type::bytes},    {"blob", data_type::bytes},
+};
+}  // namespace
 
 AsCli::AsCli(std::string host, uint32_t port, std::string user, std::string pass)
     : m_host{std::move(host)},
@@ -23,15 +35,10 @@ AsCli::~AsCli() {
 }
 
 auto AsCli::get_menu(cli::LoopScheduler* scheduler, aerospike* as) const -> std::unique_ptr<cli::Menu> {
-    auto rootMenu = std::make_unique<cli::Menu>("cli");
+    auto rootMenu = std::make_unique<cli::Menu>(m_host);
 
-    rootMenu->Insert(
-        "get",
-        [as, scheduler, aerospike_operator = &m_aerospike_operator](std::ostream& out, std::string ns, std::string set, std::string key) {
-            out << "The answer is: " << key << "\n";
-            aerospike_operator->get(ns, set, key, as, out);
-        },
-        "Get key from aerospike");
+    setup_get_ops(scheduler, as, rootMenu.get());
+    setup_put_ops(scheduler, as, rootMenu.get());
 
     auto subMenu = std::make_unique<cli::Menu>("aql");
     rootMenu->Insert(std::move(subMenu));
@@ -39,6 +46,48 @@ auto AsCli::get_menu(cli::LoopScheduler* scheduler, aerospike* as) const -> std:
     return rootMenu;
 }
 
+auto AsCli::setup_get_ops(cli::LoopScheduler* scheduler, aerospike* as, cli::Menu* menu) const -> void {
+    menu->Insert(
+        "get",
+        [as, scheduler](std::ostream& out, std::string ns, std::string set, std::string key, std::string bin) {
+            AeroOperatorIn opIn = {.ns = std::move(ns), .set = std::move(set), .key = std::move(key), .bin = std::move(bin), .out = out, .as = as};
+            AerospikeGetOperator op(std::move(opIn));
+            op.get();
+        },
+        "Get key from aerospike with bin");
+    menu->Insert(
+        "get",
+        [as, scheduler](std::ostream& out, std::string ns, std::string set, std::string key) {
+            AeroOperatorIn opIn = {.ns = std::move(ns), .set = std::move(set), .key = std::move(key), .bin = "", .out = out, .as = as};
+            AerospikeGetOperator op(std::move(opIn));
+            op.get();
+        },
+        "Get key from aerospike with bin");
+    menu->Insert(
+        "get",
+        [as, scheduler](std::ostream& out, std::string ns, std::string set) { std::cerr << "Not enough arguments: " << k_get_usage << std::endl; },
+        "");
+    menu->Insert(
+        "get", [as, scheduler](std::ostream& out, std::string ns) { std::cerr << "Not enough arguments: " << k_get_usage << std::endl; }, "");
+    menu->Insert(
+        "get", [as, scheduler](std::ostream& out) { std::cerr << "Not enough arguments: " << k_get_usage << std::endl; }, "");
+}
+
+auto AsCli::setup_put_ops(cli::LoopScheduler* scheduler, aerospike* as, cli::Menu* menu) const -> void {
+    menu->Insert(
+        "put",
+        [as, scheduler](std::ostream& out, std::string ns, std::string set, std::string key, std::string bin, std::string type, std::string value) {
+            AeroOperatorIn opIn = {.ns = std::move(ns), .set = std::move(set), .key = std::move(key), .bin = std::move(bin), .out = out, .as = as};
+            AerospikePutOperator op(std::move(opIn));
+            auto findPair = k_str_to_data_type.find(type);
+            if (findPair == k_str_to_data_type.end()) {
+                std::cerr << "Invalid data type: " << type << ", valid types are [int, double, bool, string, bytes]" << std::endl;
+            } else {
+                op.put(findPair->second, value);
+            }
+        },
+        "Put key-value into aerospike with bin");
+}
 auto AsCli::start() -> void {
     cli::SetColor();
     // global exit action
@@ -60,7 +109,7 @@ auto AsCli::start() -> void {
 
 auto AsCli::setup_aerospike(as_config* config, aerospike* as) const -> bool {
     as_event_set_external_loop_capacity(1);  // Tell C client the maximum number of event loops that will be shared.
-    auto aeroLoop = as_event_set_external_loop(
+    as_event_set_external_loop(
         uv_default_loop());  // The number of times this function is called has to match as_event_set_external_loop_capacity()
 
     // Initialize cluster configuration.
