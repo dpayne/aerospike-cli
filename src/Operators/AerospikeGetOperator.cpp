@@ -2,6 +2,7 @@
 #include <aerospike/as_record.h>
 #include <aerospike/as_record_iterator.h>
 #include <ascli/Operators/AerospikeGetOperator.h>
+#include <ascli/base64.h>
 #include <iostream>
 #include <unordered_map>
 
@@ -96,18 +97,34 @@ auto AerospikeGetOperator::print_record(const as_record* rec, const std::string&
     return out;
 }
 
+auto AerospikeGetOperator::val_to_string(as_bin_value* value) -> std::string {
+    auto val = (as_val*)value;
+    std::cerr << "Type: " << std::to_string((int32_t)val->type) << std::endl;
+    if (val->type == AS_BYTES) {
+        auto bin_str = std::string{(const char*)value->bytes.value, value->bytes.size};
+        std::string str = "\"";
+        str.append(macaron::Base64::Encode(bin_str)).append("\"");
+        return str;
+    } else {
+        const auto val_str = as_val_tostring(val);
+        auto str = std::string{val_str};
+
+        free(val_str);
+
+        return str;
+    }
+}
+
 auto AerospikeGetOperator::print_bin(const as_bin* bin, std::ostream& out) -> std::ostream& {
     auto value = as_bin_get_value(bin);
     auto val = (as_val*)value;
-    auto val_str = as_val_tostring(val);
+    auto val_str = val_to_string(value);
 
     out << "{"
         << "\"name\": \"" << bin->name << "\", ";
     out << "\"type\": \"" << print_aerospike_type(val->type) << "\", ";
     out << "\"value\": " << val_str;
     out << "}";
-
-    free(val_str);
 
     return out;
 }
