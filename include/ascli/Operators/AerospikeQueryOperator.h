@@ -1,7 +1,7 @@
 #pragma once
 
-#include <ascli/Operators/AerospikeOperator.h>
 #include <aerospike/as_record.h>
+#include <ascli/Operators/AerospikeOperator.h>
 
 namespace ascli {
 class AerospikeQueryOperator : public AerospikeOperator {
@@ -14,5 +14,3 @@ class AerospikeQueryOperator : public AerospikeOperator {
     auto query() const -> bool;
 };
 }  // namespace ascli
-
-

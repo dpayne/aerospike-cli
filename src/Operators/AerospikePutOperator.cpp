@@ -3,9 +3,8 @@
 
 using namespace ascli;
 
-namespace
-{
-    const std::chrono::seconds k_default_ttl{std::chrono::duration_cast<std::chrono::seconds>(std::chrono::days{1})};
+namespace {
+const std::chrono::seconds k_default_ttl{std::chrono::duration_cast<std::chrono::seconds>(std::chrono::days{1})};
 }
 
 AerospikePutOperator::AerospikePutOperator(AeroOperatorIn operatorIn) : AerospikeOperator(std::move(operatorIn)) {}
@@ -48,8 +47,8 @@ auto AerospikePutOperator::initialize_record(data_type dt, const std::string& va
     auto opIn = get_operator_in();
     auto bin_name = opIn.bin.empty() ? nullptr : opIn.bin.data();
     auto val = 0L;
-    char *end{};
-    char *endResult = end;
+    char* end{};
+    char* endResult = end;
     switch (dt) {
         case data_type::bytes:
             as_bytes value_bytes;
@@ -57,7 +56,7 @@ auto AerospikePutOperator::initialize_record(data_type dt, const std::string& va
             value_bytes.size = value.size();
             value_bytes.type = as_bytes_type::AS_BYTES_BLOB;
             as_record_set_bytes(rec, bin_name, &value_bytes);
-                return true;
+            return true;
         case data_type::numeric:
             if (auto [p, ec] = std::from_chars(value.data(), value.data() + value.size(), val); ec == std::errc()) {
                 as_record_set_int64(rec, bin_name, val);

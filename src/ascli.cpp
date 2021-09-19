@@ -4,12 +4,12 @@
 #include <aerospike/as_event.h>
 #include <aerospike/as_policy.h>
 #include <ascli/DataTypes.h>
-#include <ascli/Operators/AerospikeGetOperator.h>
 #include <ascli/Operators/AerospikeDeleteOperator.h>
-#include <ascli/Operators/AerospikeQueryOperator.h>
-#include <ascli/Operators/AerospikeScanOperator.h>
+#include <ascli/Operators/AerospikeGetOperator.h>
 #include <ascli/Operators/AerospikeOperator.h>
 #include <ascli/Operators/AerospikePutOperator.h>
+#include <ascli/Operators/AerospikeQueryOperator.h>
+#include <ascli/Operators/AerospikeScanOperator.h>
 
 #include <uv.h>
 
@@ -24,12 +24,7 @@ const std::unordered_map<std::string_view, data_type> k_str_to_data_type{
 }  // namespace
 
 AsCli::AsCli(std::string host, uint32_t port, std::string user, std::string pass)
-    : m_host{std::move(host)},
-      m_port{port},
-      m_user{std::move(user)},
-      m_pass{std::move(pass)},
-      m_scheduler{},
-      m_cli{get_menu(&m_aerospike)} {}
+    : m_host{std::move(host)}, m_port{port}, m_user{std::move(user)}, m_pass{std::move(pass)}, m_scheduler{}, m_cli{get_menu(&m_aerospike)} {}
 
 AsCli::~AsCli() {
     if (m_is_aerospike_initialized) {
@@ -72,9 +67,8 @@ auto AsCli::start() -> void {
 }
 
 auto AsCli::setup_aerospike(as_config* config, aerospike* as) const -> bool {
-    as_event_set_external_loop_capacity(1);  // Tell C client the maximum number of event loops that will be shared.
-    as_event_set_external_loop(
-        uv_default_loop());  // The number of times this function is called has to match as_event_set_external_loop_capacity()
+    as_event_set_external_loop_capacity(1);         // Tell C client the maximum number of event loops that will be shared.
+    as_event_set_external_loop(uv_default_loop());  // The number of times this function is called has to match as_event_set_external_loop_capacity()
 
     // Initialize cluster configuration.
     as_config_init(config);
@@ -120,9 +114,7 @@ auto AsCli::setup_get_ops(aerospike* as, cli::Menu* menu) const -> void {
         },
         "Get key from aerospike with bin");
     menu->Insert(
-        "get",
-        [](std::ostream& out, std::string ns, std::string set) { std::cerr << "Not enough arguments: " << k_get_usage << std::endl; },
-        "");
+        "get", [](std::ostream& out, std::string ns, std::string set) { std::cerr << "Not enough arguments: " << k_get_usage << std::endl; }, "");
     menu->Insert(
         "get", [](std::ostream& out, std::string ns) { std::cerr << "Not enough arguments: " << k_get_usage << std::endl; }, "");
     menu->Insert(

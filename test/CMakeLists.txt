@@ -12,7 +12,9 @@ CPMAddPackage("gh:TheLartians/Format.cmake@1.7.0")
 
 file(GLOB sources CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 add_executable(${PROJECT_TEST_NAME} ${sources})
-target_link_libraries(${PROJECT_TEST_NAME} doctest::doctest ${PROJECT_NAME}::${PROJECT_LIB_NAME} cli::cli dl)
+target_link_libraries(
+  ${PROJECT_TEST_NAME} doctest::doctest ${PROJECT_NAME}::${PROJECT_LIB_NAME} cli::cli dl
+)
 set_target_properties(${PROJECT_TEST_NAME} PROPERTIES CXX_STANDARD 20)
 
 # enable compiler warnings
@@ -30,7 +32,8 @@ endif()
 enable_testing()
 
 # Note: doctest and similar testing frameworks can automatically configure CMake tests. For other
-# testing frameworks add the tests target instead: add_test(NAME projectNameTests COMMAND ${PROJECT_TEST_NAME})
+# testing frameworks add the tests target instead: add_test(NAME projectNameTests COMMAND
+# ${PROJECT_TEST_NAME})
 
 include(${doctest_SOURCE_DIR}/scripts/cmake/doctest.cmake)
 doctest_discover_tests(${PROJECT_TEST_NAME})

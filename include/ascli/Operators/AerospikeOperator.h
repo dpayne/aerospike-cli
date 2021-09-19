@@ -26,14 +26,10 @@ class AerospikeOperator {
     AeroOperatorIn m_operator_in;
 
    protected:
-    auto get_operator_in() const -> const AeroOperatorIn &
-    {
-        return m_operator_in;
-    }
+    auto get_operator_in() const -> const AeroOperatorIn& { return m_operator_in; }
 
    public:
     AerospikeOperator(AeroOperatorIn operatorIn);
 };
 
 }  // namespace ascli
-

@@ -1,12 +1,12 @@
 #pragma once
 
-#include <string>
 #include <aerospike/aerospike.h>
 #include <aerospike/as_config.h>
 #include <cli/cli.h>
 #include <cli/clifilesession.h>
 #include <cli/clilocalsession.h>
 #include <cli/loopscheduler.h>
+#include <string>
 
 namespace ascli {
 
@@ -27,11 +27,11 @@ class AsCli {
     aerospike m_aerospike;
     bool m_is_aerospike_initialized{false};
 
-    auto get_menu(aerospike * as) const -> std::unique_ptr<cli::Menu>;
+    auto get_menu(aerospike* as) const -> std::unique_ptr<cli::Menu>;
 
-    auto setup_get_ops(aerospike * as, cli::Menu * menu) const -> void;
+    auto setup_get_ops(aerospike* as, cli::Menu* menu) const -> void;
 
-    auto setup_put_ops(aerospike * as, cli::Menu * menu) const -> void;
+    auto setup_put_ops(aerospike* as, cli::Menu* menu) const -> void;
 
     auto setup_delete_ops(aerospike* as, cli::Menu* menu) const -> void;
 
@@ -39,7 +39,7 @@ class AsCli {
 
     auto setup_scan_ops(aerospike* as, cli::Menu* menu) const -> void;
 
-    auto setup_aerospike(as_config * config, aerospike * as) const -> bool;
+    auto setup_aerospike(as_config* config, aerospike* as) const -> bool;
 
    public:
     /**

@@ -23,18 +23,36 @@ add_library(${PROJECT_LIB_NAME} ${headers} ${sources})
 set_target_properties(${PROJECT_LIB_NAME} PROPERTIES CXX_STANDARD 20)
 
 # being a cross-platform target, we enforce standards conformance on MSVC
-if (CMAKE_BUILD_TYPE STREQUAL "Release")
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
   if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-    target_compile_options(${PROJECT_LIB_NAME} PUBLIC "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/permissive->" -fno-strict-aliasing -DNDEBUG -Wall -O3 -Wno-variadic-macros)
+    target_compile_options(
+      ${PROJECT_LIB_NAME} PUBLIC "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/permissive->"
+                                 -fno-strict-aliasing -DNDEBUG -Wall -O3 -Wno-variadic-macros
+    )
   else()
-    target_compile_options(${PROJECT_LIB_NAME} PUBLIC "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/permissive->")
+    target_compile_options(
+      ${PROJECT_LIB_NAME} PUBLIC "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/permissive->"
+    )
   endif()
   target_compile_definitions(${PROJECT_LIB_NAME} PUBLIC NDEBUG)
 else()
   if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-    target_compile_options(${PROJECT_LIB_NAME} PUBLIC "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/permissive->" -fno-strict-aliasing -ggdb -g3 -DDEBUG -Wall -Werror -O0 -Wno-variadic-macros)
+    target_compile_options(
+      ${PROJECT_LIB_NAME}
+      PUBLIC "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/permissive->"
+             -fno-strict-aliasing
+             -ggdb
+             -g3
+             -DDEBUG
+             -Wall
+             -Werror
+             -O0
+             -Wno-variadic-macros
+    )
   else()
-    target_compile_options(${PROJECT_LIB_NAME} PUBLIC "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/permissive->")
+    target_compile_options(
+      ${PROJECT_LIB_NAME} PUBLIC "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/permissive->"
+    )
   endif()
   target_compile_definitions(${PROJECT_LIB_NAME} PUBLIC DEBUG)
 endif()
@@ -42,11 +60,20 @@ endif()
 add_dependencies(${PROJECT_LIB_NAME} project_libuv project_aerospike)
 
 # Link dependencies
-target_link_libraries(${PROJECT_LIB_NAME} PRIVATE fmt::fmt cli::cli aerospike uv z ssl crypto)
+target_link_libraries(
+  ${PROJECT_LIB_NAME}
+  PRIVATE fmt::fmt
+          cli::cli
+          aerospike
+          uv
+          z
+          ssl
+          crypto
+)
 
 target_include_directories(
-    ${PROJECT_LIB_NAME} PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-                 $<INSTALL_INTERFACE:include/${PROJECT_NAME}-${PROJECT_VERSION}>
+  ${PROJECT_LIB_NAME} PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+                             $<INSTALL_INTERFACE:include/${PROJECT_NAME}-${PROJECT_VERSION}>
 )
 
 # ---- Create an installable target ----

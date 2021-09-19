@@ -1,7 +1,7 @@
 #pragma once
 
-#include <ascli/Operators/AerospikeOperator.h>
 #include <aerospike/as_record.h>
+#include <ascli/Operators/AerospikeOperator.h>
 
 namespace ascli {
 class AerospikeDeleteOperator : public AerospikeOperator {
@@ -12,4 +12,3 @@ class AerospikeDeleteOperator : public AerospikeOperator {
     auto del() const -> bool;
 };
 }  // namespace ascli
-

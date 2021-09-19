@@ -61,4 +61,3 @@ bool AerospikeScanOperator::scan_callback(const as_val* val, void* udata) {
 
     return true;
 }
-
