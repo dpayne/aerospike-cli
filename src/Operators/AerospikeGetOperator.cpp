@@ -99,7 +99,6 @@ auto AerospikeGetOperator::print_record(const as_record* rec, const std::string&
 
 auto AerospikeGetOperator::val_to_string(as_bin_value* value) -> std::string {
     auto val = (as_val*)value;
-    std::cerr << "Type: " << std::to_string((int32_t)val->type) << std::endl;
     if (val->type == AS_BYTES) {
         auto bin_str = std::string{(const char*)value->bytes.value, value->bytes.size};
         std::string str = "\"";
