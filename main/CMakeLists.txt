@@ -2,7 +2,7 @@
 
 CPMAddPackage(
   GITHUB_REPOSITORY jarro2783/cxxopts
-  VERSION 2.2.1
+  VERSION ${cxxopts_version}
   OPTIONS "CXXOPTS_BUILD_EXAMPLES NO" "CXXOPTS_BUILD_TESTS NO" "CXXOPTS_ENABLE_INSTALL YES"
 )
 
@@ -16,7 +16,13 @@ set_target_properties(
   ${PROJECT_MAIN_NAME} PROPERTIES CXX_STANDARD 20 OUTPUT_NAME "${PROJECT_MAIN_NAME}"
 )
 
-target_link_libraries(${PROJECT_MAIN_NAME} ${PROJECT_NAME}::${PROJECT_LIB_NAME} cxxopts cli::cli dl)
+add_dependencies(${PROJECT_MAIN_NAME} ${PROJECT_LIB_NAME})
+
+if (ENABLE_STATIC_BUILD)
+  target_link_libraries(${PROJECT_MAIN_NAME} -static ${PROJECT_NAME}::${PROJECT_LIB_NAME} cxxopts cli::cli resolv_nonshared m_nonshared mvec_nonshared pthread jemalloc pthread_nonshared c_nonshared rt_nonshared dl_nonshared)
+else()
+  target_link_libraries(${PROJECT_MAIN_NAME} ${PROJECT_NAME}::${PROJECT_LIB_NAME} cxxopts cli::cli dl)
+endif()
 
 add_custom_target(${PROJECT_NAME}_executable ALL
     COMMAND ln -sf ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}

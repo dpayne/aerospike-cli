@@ -57,19 +57,21 @@ else()
   target_compile_definitions(${PROJECT_LIB_NAME} PUBLIC DEBUG)
 endif()
 
-add_dependencies(${PROJECT_LIB_NAME} project_libuv project_aerospike)
+# ------ Link dependencies --------
 
-# Link dependencies
-target_link_libraries(
-  ${PROJECT_LIB_NAME}
-  PRIVATE fmt::fmt
-          cli::cli
-          aerospike
-          uv
-          z
-          ssl
-          crypto
-)
+add_dependencies(${PROJECT_LIB_NAME} project_libuv project_aerospike)
+# the dependencies need to be setup in the library setup so that the correct version'd headers files will be used (e.g. the library should use the compiled ssl headers not the system ssl headers)
+if (ENABLE_STATIC_BUILD)
+  foreach (dep IN LISTS ${PROJECT_NAME}_STATIC_DEPENDENCIES)
+    add_dependencies(${PROJECT_LIB_NAME} ${dep})
+  endforeach()
+endif()
+
+if (ENABLE_STATIC_BUILD)
+  target_link_libraries(${PROJECT_LIB_NAME} PRIVATE -static fmt::fmt cli::cli aerospike uv z ssl crypto jemalloc pthread dl)
+else()
+  target_link_libraries(${PROJECT_LIB_NAME} PRIVATE fmt::fmt cli::cli aerospike uv z ssl crypto)
+endif()
 
 target_include_directories(
   ${PROJECT_LIB_NAME} PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
@@ -92,5 +94,5 @@ packageProject(
   INCLUDE_DESTINATION include/${PROJECT_NAME}-${PROJECT_VERSION}
   VERSION_HEADER "${VERSION_HEADER_LOCATION}"
   COMPATIBILITY SameMajorVersion
-  DEPENDENCIES "fmt 7.1.3" "cli 2.0.0"
+  DEPENDENCIES "fmt ${libfmt_version}" "cli ${cli_version}"
 )

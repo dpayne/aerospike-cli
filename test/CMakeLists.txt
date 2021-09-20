@@ -5,8 +5,8 @@ option(TEST_INSTALLED_VERSION "Test the version found by find_package" OFF)
 
 # ---- Dependencies ----
 
-CPMAddPackage("gh:onqtam/doctest#2.4.5")
-CPMAddPackage("gh:TheLartians/Format.cmake@1.7.0")
+CPMAddPackage("gh:onqtam/doctest#${doctest_version}")
+CPMAddPackage("gh:TheLartians/Format.cmake@${cmake_format_version}")
 
 # ---- Create binary ----
 

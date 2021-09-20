@@ -27,10 +27,10 @@ jobs:
           key: ${{ github.workflow }}-cpm-modules-${{ hashFiles('**/CMakeLists.txt', '**/*.cmake') }}
 
       - name: configure
-        run: cmake -Stest -Bbuild -DCMAKE_BUILD_TYPE=Debug
+        run: cmake -Bbuild -DCMAKE_BUILD_TYPE=Debug -DENABLE_TEST=ON
 
       - name: build
-        run: cmake --build build -j4
+        run: cmake --build build --target test -j4
 
       - name: test
         run: |

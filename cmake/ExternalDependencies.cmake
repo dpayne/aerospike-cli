@@ -1,3 +1,5 @@
 set(EXTERNAL_PROJECTS_DIR ${CMAKE_BINARY_DIR}/_deps)
-include_directories(${CMAKE_BINARY_DIR}/_deps/include)
-link_directories(${CMAKE_BINARY_DIR}/_deps/lib)
+set(EXTERNAL_PROJECTS_INCLUDE_DIR  ${EXTERNAL_PROJECTS_DIR}/include)
+set(EXTERNAL_PROJECTS_LIB_DIR ${EXTERNAL_PROJECTS_DIR}/lib)
+include_directories(${EXTERNAL_PROJECTS_INCLUDE_DIR})
+link_directories(${EXTERNAL_PROJECTS_LIB_DIR})

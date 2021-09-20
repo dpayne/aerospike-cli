@@ -7,7 +7,7 @@ cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 option(ENABLE_TEST "Enable unit tests" ON)
 option(ENABLE_DOCS "Enable documentation generation" ON)
 option(ENABLE_MAIN "Enable main executable" ON)
-option(ENABLE_STATIC_BUILD "Enable static build" ON)
+option(ENABLE_STATIC_BUILD "Enable static build" OFF)
 option(ENABLE_LINTER "Enable linter" OFF)
 option(USE_CCACHE_BY_DEFAULT "Enable ccache" ON)
 
@@ -41,14 +41,19 @@ set(PROJECT_TEST_NAME ${ROOT_PROJECT_NAME}Test)
 set(PROJECT_DOCS_NAME ${ROOT_PROJECT_NAME}Docs)
 
 # ---- General Compile Time Flags ----
+include(versions.cmake)
+include(cmake/ExternalDependencies.cmake)
 include(cmake/BuildFlags.cmake)
 
 # ---- Add dependencies via CPM ----
 
 include(cmake/tools.cmake)
-include(cmake/ExternalDependencies.cmake)
 include(cmake/CPM.cmake)
 include(cmake/ProjectLibraries.cmake)
+
+if(ENABLE_STATIC_BUILD)
+  include(cmake/StaticBuild.cmake)
+endif()
 
 # My default build all
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/src ${CMAKE_BINARY_DIR}/src)
