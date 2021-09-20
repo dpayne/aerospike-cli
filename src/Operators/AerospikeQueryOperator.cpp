@@ -33,13 +33,13 @@ auto AerospikeQueryOperator::query() const -> bool {
     return true;
 }
 
-bool AerospikeQueryOperator::query_callback(const as_val* val, void* udata) {
-    auto opIn = (AeroOperatorIn*)udata;
+auto AerospikeQueryOperator::query_callback(const as_val* val, void* udata) -> bool {
+    auto* opIn = reinterpret_cast<AeroOperatorIn*>(udata);
     if (val == nullptr) {
         return true;
     }
 
-    auto rec = as_record_fromval(val);
+    auto* rec = as_record_fromval(val);
 
     if (rec == nullptr) {
         return true;

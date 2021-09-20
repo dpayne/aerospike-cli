@@ -6,11 +6,11 @@
 namespace ascli {
 class AerospikeScanOperator : public AerospikeOperator {
    private:
-    static bool scan_callback(const as_val* p_val, void* udata);
+    static auto scan_callback(const as_val* p_val, void* udata) -> bool;
 
    public:
     AerospikeScanOperator(AeroOperatorIn operatorIn);
 
-    auto scan() const -> bool;
+    [[nodiscard]] auto scan() const -> bool;
 };
 }  // namespace ascli

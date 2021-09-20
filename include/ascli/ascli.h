@@ -23,8 +23,8 @@ class AsCli {
     cli::LoopScheduler m_scheduler;
     cli::Cli m_cli;
 
-    as_config m_config;
-    aerospike m_aerospike;
+    as_config m_config{};
+    aerospike m_aerospike{};
     bool m_is_aerospike_initialized{false};
 
     auto get_menu(aerospike* as) const -> std::unique_ptr<cli::Menu>;
@@ -50,6 +50,11 @@ class AsCli {
      */
     AsCli(std::string host, uint32_t port, std::string user, std::string pass);
     virtual ~AsCli();
+
+    AsCli(AsCli&&) = delete;
+    AsCli(const AsCli&) = delete;
+    auto operator=(const AsCli&) -> AsCli = delete;
+    auto operator=(AsCli&&) -> AsCli = delete;
 
     /**
      * @brief Starts aerospike cli

@@ -27,7 +27,7 @@ auto AerospikePutOperator::put(data_type dt, const std::string& value) const -> 
 
     // Read the test record from the database.
     if (aerospike_key_put(opIn.as, &err, nullptr, &akey, &rec) != AEROSPIKE_OK) {
-        std::cerr << "aerospike_key_put() returned " << err.code << " " << err.message << std::endl;
+        std::cerr << "aerospike_key_put() returned " << err.code << " " << static_cast<const char*>(err.message) << std::endl;
         as_record_destroy(&rec);
         return false;
     }
@@ -41,24 +41,25 @@ auto AerospikePutOperator::put(data_type dt, const std::string& value) const -> 
     return true;
 }
 
-auto AerospikePutOperator::initialize_record(data_type dt, const std::string& value, as_record* rec) const -> bool {
+auto AerospikePutOperator::initialize_record(data_type dt, const std::string& value_in, as_record* rec) const -> bool {
+    std::string value = value_in;
     as_record_init(rec, 1);
     rec->ttl = k_default_ttl.count();
     auto opIn = get_operator_in();
-    auto bin_name = opIn.bin.empty() ? nullptr : opIn.bin.data();
+    const char* bin_name = opIn.bin.empty() ? nullptr : opIn.bin.data();
     auto val = 0L;
-    char* end{};
-    char* endResult = end;
+    auto* end = value.data();
+    auto* endResult = end;
     switch (dt) {
         case data_type::bytes:
             as_bytes value_bytes;
-            value_bytes.value = (uint8_t*)value.data();
+            value_bytes.value = (uint8_t*)value.data();  // NOLINT
             value_bytes.size = value.size();
             value_bytes.type = as_bytes_type::AS_BYTES_BLOB;
             as_record_set_bytes(rec, bin_name, &value_bytes);
             return true;
         case data_type::numeric:
-            if (auto [p, ec] = std::from_chars(value.data(), value.data() + value.size(), val); ec == std::errc()) {
+            if (auto [p, ec] = std::from_chars(value.data(), value.data() + value.size(), val); ec == std::errc()) {  // NOLINT
                 as_record_set_int64(rec, bin_name, val);
                 return true;
             } else {
@@ -67,8 +68,8 @@ auto AerospikePutOperator::initialize_record(data_type dt, const std::string& va
                 return false;
             }
         case data_type::decimal:
-            end = (char*)(value.data() + value.size());
-            endResult = end;
+            end = reinterpret_cast<char*>(value.data() + value.size());  // NOLINT
+            endResult = end;                                             // NOLINT
             as_record_set_double(rec, bin_name, std::strtod(value.data(), &endResult));
             return true;
         case data_type::string:

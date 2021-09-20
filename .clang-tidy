@@ -1,4 +1,4 @@
-Checks:          'performance-*,clang-diagnostic-*,clang-analyzer-*,modernize-*,readability-*,misc-*,cppcoreguidelines-*'
+Checks:          'performance-*,clang-diagnostic-*,clang-analyzer-*,modernize-*,readability-*,misc-*,cppcoreguidelines-*,-readability-convert-member-functions-to-static,-cppcoreguidelines-pro-type-reinterpret-cast'
 WarningsAsErrors: ''
 HeaderFilterRegex: '*.h'
 AnalyzeTemporaryDtors: false

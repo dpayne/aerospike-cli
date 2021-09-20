@@ -6,11 +6,11 @@
 namespace ascli {
 class AerospikeQueryOperator : public AerospikeOperator {
    private:
-    static bool query_callback(const as_val* p_val, void* udata);
+    static auto query_callback(const as_val* p_val, void* udata) -> bool;
 
    public:
     AerospikeQueryOperator(AeroOperatorIn operatorIn);
 
-    auto query() const -> bool;
+    [[nodiscard]] auto query() const -> bool;
 };
 }  // namespace ascli

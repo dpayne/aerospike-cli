@@ -8,6 +8,12 @@ option(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 option(ENABLE_TEST "Enable unit tests" ON)
 option(ENABLE_DOCS "Enable documentation generation" ON)
 option(ENABLE_MAIN "Enable main executable" ON)
+option(ENABLE_LINTER "Enable linter" ON)
+
+# by default enable clang tidy
+if(ENABLE_LINTER)
+  set(USE_STATIC_ANALYZER clang-tidy)
+endif()
 
 # ---- Project ----
 
@@ -32,9 +38,6 @@ include(cmake/ExternalDependencies.cmake)
 include(cmake/CPM.cmake)
 include(cmake/ProjectLibraries.cmake)
 
-# needed to generate test target
-enable_testing()
-
 # My default build all
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/src ${CMAKE_BINARY_DIR}/src)
 if(${ENABLE_MAIN})
@@ -42,6 +45,8 @@ if(${ENABLE_MAIN})
 endif()
 
 if(${ENABLE_TEST})
+  # needed to generate test target
+  enable_testing()
   add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/test ${CMAKE_BINARY_DIR}/test)
 endif()
 

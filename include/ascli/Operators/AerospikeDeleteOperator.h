@@ -9,6 +9,6 @@ class AerospikeDeleteOperator : public AerospikeOperator {
    public:
     AerospikeDeleteOperator(AeroOperatorIn operatorIn);
 
-    auto del() const -> bool;
+    [[nodiscard]] auto del() const -> bool;
 };
 }  // namespace ascli

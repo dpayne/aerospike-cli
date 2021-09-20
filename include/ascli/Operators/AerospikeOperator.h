@@ -16,7 +16,7 @@ struct AeroOperatorIn_s {
     aerospike* as;
 };
 
-typedef struct AeroOperatorIn_s AeroOperatorIn;
+using AeroOperatorIn = struct AeroOperatorIn_s;
 
 /**
  * @brief Aerospike operations
@@ -26,7 +26,7 @@ class AerospikeOperator {
     AeroOperatorIn m_operator_in;
 
    protected:
-    auto get_operator_in() const -> const AeroOperatorIn& { return m_operator_in; }
+    [[nodiscard]] auto get_operator_in() const -> const AeroOperatorIn& { return m_operator_in; }
 
    public:
     AerospikeOperator(AeroOperatorIn operatorIn);

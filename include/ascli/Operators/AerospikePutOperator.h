@@ -14,7 +14,7 @@ class AerospikePutOperator : public AerospikeOperator {
    public:
     AerospikePutOperator(AeroOperatorIn operatorIn);
 
-    auto put(data_type dt, const std::string& value) const -> bool;
+    [[nodiscard]] auto put(data_type dt, const std::string& value) const -> bool;
     auto initialize_record(data_type dt, const std::string& value, as_record* rec) const -> bool;
 };
 }  // namespace ascli

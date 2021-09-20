@@ -16,7 +16,7 @@ auto AerospikeDeleteOperator::del() const -> bool {
     as_key_init_str(&akey, opIn.ns.c_str(), opIn.set.c_str(), opIn.key.c_str());
 
     if (aerospike_key_remove(opIn.as, &err, nullptr, &akey) != AEROSPIKE_OK) {
-        std::cerr << "aerospike_key_remove() returned " << err.code << " " << err.message << std::endl;
+        std::cerr << "aerospike_key_remove() returned " << err.code << " " << std::string_view(&err.message[0]) << std::endl;
         return false;
     }
 

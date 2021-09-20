@@ -50,7 +50,7 @@ auto AerospikeGetOperator::get() const -> bool {
 
     // Read the test record from the database.
     if (aerospike_key_get(opIn.as, &err, nullptr, &akey, &rec) != AEROSPIKE_OK) {
-        std::cerr << "aerospike_key_get() returned " << err.code << " " << err.message << std::endl;
+        std::cerr << "aerospike_key_get() returned " << err.code << " " << static_cast<const char*>(err.message) << std::endl;
         return false;
     }
 
@@ -71,9 +71,9 @@ auto AerospikeGetOperator::get() const -> bool {
 auto AerospikeGetOperator::print_record(const as_record* rec, const std::string& bin_name, std::ostream& out) -> std::ostream& {
     out << "{";
     if (rec->key.valuep != nullptr) {
-        auto key_val_as_str = as_val_tostring(rec->key.valuep);
+        auto key_val_as_str = as_val_tostring(rec->key.valuep);  // NOLINT
         out << "\"key\":" << key_val_as_str << ", ";
-        free(key_val_as_str);
+        free(key_val_as_str);  // NOLINT
     }
 
     out << "\"gen\":" << rec->gen << ", "
@@ -82,9 +82,9 @@ auto AerospikeGetOperator::print_record(const as_record* rec, const std::string&
     as_record_iterator it;
     as_record_iterator_init(&it, rec);
     while (as_record_iterator_has_next(&it)) {
-        auto bin = as_record_iterator_next(&it);
+        auto* bin = as_record_iterator_next(&it);
         if (!bin_name.empty()) {
-            if (strncmp(bin->name, bin_name.c_str(), bin_name.size()) != 0) {
+            if (strncmp(static_cast<const char*>(bin->name), bin_name.c_str(), bin_name.size()) != 0) {
                 continue;
             }
         }
@@ -98,31 +98,31 @@ auto AerospikeGetOperator::print_record(const as_record* rec, const std::string&
 }
 
 auto AerospikeGetOperator::val_to_string(as_bin_value* value) -> std::string {
-    auto val = (as_val*)value;
+    auto* val = reinterpret_cast<as_val*>(value);
+    std::string str;
     if (val->type == AS_BYTES) {
-        auto bin_str = std::string{(const char*)value->bytes.value, value->bytes.size};
-        std::string str = "\"";
+        auto bin_str = std::string{reinterpret_cast<const char*>(value->bytes.value), value->bytes.size};
+        str = "\"";
         str.append(macaron::Base64::Encode(bin_str)).append("\"");
-        return str;
     } else {
-        const auto val_str = as_val_tostring(val);
+        auto* val_str = as_val_tostring(val);
         auto str = std::string{val_str};
 
-        free(val_str);
-
-        return str;
+        free(val_str);  // NOLINT
     }
+
+    return str;
 }
 
 auto AerospikeGetOperator::print_bin(const as_bin* bin, std::ostream& out) -> std::ostream& {
-    auto value = as_bin_get_value(bin);
-    auto val = (as_val*)value;
+    auto* value = as_bin_get_value(bin);
+    auto* val = reinterpret_cast<as_val*>(value);
     auto val_str = val_to_string(value);
 
     out << "{"
-        << "\"name\": \"" << bin->name << "\", ";
-    out << "\"type\": \"" << print_aerospike_type(val->type) << "\", ";
-    out << "\"value\": " << val_str;
+        << R"("name": ")" << static_cast<const char*>(bin->name) << R"(", )";
+    out << R"("type": ")" << print_aerospike_type(val->type) << R"(", )";
+    out << R"("value": )" << val_str;
     out << "}";
 
     return out;
