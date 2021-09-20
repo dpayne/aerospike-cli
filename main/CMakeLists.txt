@@ -17,3 +17,10 @@ set_target_properties(
 )
 
 target_link_libraries(${PROJECT_MAIN_NAME} ${PROJECT_NAME}::${PROJECT_LIB_NAME} cxxopts cli::cli dl)
+
+add_custom_target(${PROJECT_NAME}_executable ALL
+    COMMAND ln -sf ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}
+        DEPENDS ${PROJECT_NAME}
+        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+        COMMENT "Linking executable shortcut ${CMAKE_CURRENT_BINARY_DIR}"
+        )

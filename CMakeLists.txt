@@ -4,15 +4,27 @@ set(ROOT_PROJECT_NAME "ascli")
 cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 
 # options
-option(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 option(ENABLE_TEST "Enable unit tests" ON)
 option(ENABLE_DOCS "Enable documentation generation" ON)
 option(ENABLE_MAIN "Enable main executable" ON)
-option(ENABLE_LINTER "Enable linter" ON)
+option(ENABLE_STATIC_BUILD "Enable static build" ON)
+option(ENABLE_LINTER "Enable linter" OFF)
+option(USE_CCACHE_BY_DEFAULT "Enable ccache" ON)
+
+# always export compile commands
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # by default enable clang tidy
 if(ENABLE_LINTER)
   set(USE_STATIC_ANALYZER clang-tidy)
+endif()
+
+# enable ccache by default if available
+if(USE_CCACHE_BY_DEFAULT)
+  find_program(CCACHE_FOUND ccache)
+  if(CCACHE_FOUND)
+    set(USE_CCACHE ON CACHE BOOL "" FORCE)
+  endif(CCACHE_FOUND)
 endif()
 
 # ---- Project ----
