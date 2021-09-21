@@ -88,7 +88,9 @@ auto AerospikeGetOperator::print_record(const as_record* rec, const std::string&
                 continue;
             }
         }
-        print_bin(bin, out);
+        if (bin != nullptr) {
+            print_bin(bin, out);
+        }
     }
     out << "]";
     out << "}";
@@ -104,6 +106,10 @@ auto AerospikeGetOperator::val_to_string(as_bin_value* value) -> std::string {
         auto bin_str = std::string{reinterpret_cast<const char*>(value->bytes.value), value->bytes.size};
         str = "\"";
         str.append(macaron::Base64::Encode(bin_str)).append("\"");
+    } else if (val->type == AS_STRING) {
+        auto bin_str = std::string{reinterpret_cast<const char*>(value->string.value), value->string.len};
+        str = "\"";
+        str.append(bin_str).append("\"");
     } else {
         auto* val_str = as_val_tostring(val);
         auto str = std::string{val_str};
@@ -116,6 +122,9 @@ auto AerospikeGetOperator::val_to_string(as_bin_value* value) -> std::string {
 
 auto AerospikeGetOperator::print_bin(const as_bin* bin, std::ostream& out) -> std::ostream& {
     auto* value = as_bin_get_value(bin);
+    if (value == nullptr) {
+        return out;
+    }
     auto* val = reinterpret_cast<as_val*>(value);
     auto val_str = val_to_string(value);
 
