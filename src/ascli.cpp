@@ -1,6 +1,7 @@
 #include <ascli/ascli.h>
 #include <fmt/format.h>
 
+#include <unordered_map>
 #include <aerospike/as_event.h>
 #include <aerospike/as_policy.h>
 #include <ascli/DataTypes.h>
@@ -88,6 +89,7 @@ auto AsCli::setup_aerospike(as_config* config, aerospike* as) const -> bool {
     // Connect to the Aerospike database cluster. Assume this is the first thing
     // done after calling example_get_opts(), so it's ok to exit on failure.
     if (aerospike_connect(as, &err) != AEROSPIKE_OK) {
+        std::cerr << "aerospike_connect() returned " << err.code << " " << static_cast<const char*>(err.message) << std::endl;
         as_event_close_loops();
         aerospike_destroy(as);
         return false;

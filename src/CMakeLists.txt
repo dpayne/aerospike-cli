@@ -68,9 +68,9 @@ if (ENABLE_STATIC_BUILD)
 endif()
 
 if (ENABLE_STATIC_BUILD)
-  target_link_libraries(${PROJECT_LIB_NAME} PRIVATE -static fmt::fmt cli::cli aerospike uv z ssl crypto jemalloc pthread dl)
+  target_link_libraries(${PROJECT_LIB_NAME} PRIVATE -static fmt::fmt cli::cli aerospike uv z ${OPENSSL_LIBRARIES} crypto jemalloc pthread dl)
 else()
-  target_link_libraries(${PROJECT_LIB_NAME} PRIVATE fmt::fmt cli::cli aerospike uv z ssl crypto)
+  target_link_libraries(${PROJECT_LIB_NAME} PRIVATE fmt::fmt cli::cli aerospike uv z ${OPENSSL_LIBRARIES} crypto)
 endif()
 
 target_include_directories(

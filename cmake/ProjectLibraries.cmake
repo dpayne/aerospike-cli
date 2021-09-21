@@ -54,7 +54,7 @@ ExternalProject_Add(
     make -j1 EVENT_LIB=libuv
     EXT_CFLAGS=${CMAKE_C_FLAGS}\ -I${EXTERNAL_PROJECTS_DIR}/include\ -L${EXTERNAL_PROJECTS_DIR}/lib
   INSTALL_COMMAND
-    cp ${EXTERNAL_PROJECTS_DIR}/src/project_aerospike/target/Linux-x86_64/lib/libaerospike.a
+    cp ${EXTERNAL_PROJECTS_DIR}/src/project_aerospike/target/${CMAKE_SYSTEM_NAME}-x86_64/lib/libaerospike.a
     ${EXTERNAL_PROJECTS_DIR}/lib/
   COMMAND
     cp -r
