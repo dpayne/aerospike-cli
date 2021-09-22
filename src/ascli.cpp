@@ -104,7 +104,7 @@ auto AsCli::setup_get_ops(aerospike* as, cli::Menu* menu) const -> void {
         [as](std::ostream& out, std::string ns, std::string set, std::string key, std::string bin) {
             AeroOperatorIn opIn = {.ns = std::move(ns), .set = std::move(set), .key = std::move(key), .bin = std::move(bin), .out = out, .as = as};
             AerospikeGetOperator op(std::move(opIn));
-            if (op.get()) {
+            if (!op.get()) {
                 out << k_error_msg << "could not get value" << std::endl;
             }
         },
@@ -114,7 +114,7 @@ auto AsCli::setup_get_ops(aerospike* as, cli::Menu* menu) const -> void {
         [as](std::ostream& out, std::string ns, std::string set, std::string key) {
             AeroOperatorIn opIn = {.ns = std::move(ns), .set = std::move(set), .key = std::move(key), .bin = "", .out = out, .as = as};
             AerospikeGetOperator op(std::move(opIn));
-            if (op.get()) {
+            if (!op.get()) {
                 out << k_error_msg << "could not get value" << std::endl;
             }
         },
@@ -132,7 +132,7 @@ auto AsCli::setup_put_ops(aerospike* as, cli::Menu* menu) const -> void {
             if (findPair == k_str_to_data_type.end()) {
                 std::cerr << "Invalid data type: " << type << ", valid types are [int, double, bool, string, bytes]" << std::endl;
             } else {
-                if (op.put(findPair->second, value)) {
+                if (!op.put(findPair->second, value)) {
                     out << k_error_msg << "could not put value" << std::endl;
                 }
             }
@@ -147,7 +147,7 @@ auto AsCli::setup_put_ops(aerospike* as, cli::Menu* menu) const -> void {
             if (findPair == k_str_to_data_type.end()) {
                 std::cerr << "Invalid data type: " << type << ", valid types are [int, double, bool, string, bytes]" << std::endl;
             } else {
-                if (op.put(findPair->second, value)) {
+                if (!op.put(findPair->second, value)) {
                     out << k_error_msg << "could not put value" << std::endl;
                 }
             }
@@ -161,7 +161,7 @@ auto AsCli::setup_delete_ops(aerospike* as, cli::Menu* menu) const -> void {
         [as](std::ostream& out, std::string ns, std::string set, std::string key) {
             AeroOperatorIn opIn = {.ns = std::move(ns), .set = std::move(set), .key = std::move(key), .out = out, .as = as};
             AerospikeDeleteOperator op(std::move(opIn));
-            if (op.del()) {
+            if (!op.del()) {
                 out << k_error_msg << "could not delete value" << std::endl;
             }
         },
@@ -174,7 +174,7 @@ auto AsCli::setup_query_ops(aerospike* as, cli::Menu* menu) const -> void {
         [as](std::ostream& out, std::string ns, std::string set) {
             AeroOperatorIn opIn = {.ns = std::move(ns), .set = std::move(set), .out = out, .as = as};
             AerospikeQueryOperator op(std::move(opIn));
-            if (op.query()) {
+            if (!op.query()) {
                 out << k_error_msg << "could not run query" << std::endl;
             }
         },
@@ -187,7 +187,7 @@ auto AsCli::setup_scan_ops(aerospike* as, cli::Menu* menu) const -> void {
         [as](std::ostream& out, std::string ns, std::string set) {
             AeroOperatorIn opIn = {.ns = std::move(ns), .set = std::move(set), .out = out, .as = as};
             AerospikeScanOperator op(std::move(opIn));
-            if (op.scan()) {
+            if (!op.scan()) {
                 out << k_error_msg << "could not run scan" << std::endl;
             }
         },

@@ -1,10 +1,17 @@
-### Build and run the standalone target
+[![Actions Status](https://github.com/dpayne/aerospike-cli/workflows/MacOS/badge.svg)](https://github.com/dpayne/aerospike-cli/actions)
+[![Actions Status](https://github.com/dpayne/aerospike-cli/workflows/Windows/badge.svg)](https://github.com/dpayne/aerospike-cli/actions)
+[![Actions Status](https://github.com/dpayne/aerospike-cli/workflows/Ubuntu/badge.svg)](https://github.com/dpayne/aerospike-cli/actions)
+[![Actions Status](https://github.com/dpayne/aerospike-cli/workflows/Style/badge.svg)](https://github.com/dpayne/aerospike-cli/actions)
+[![Actions Status](https://github.com/dpayne/aerospike-cli/workflows/Install/badge.svg)](https://github.com/dpayne/aerospike-cli/actions)
+[![codecov](https://codecov.io/gh/dpayne/aerospike-cli/branch/master/graph/badge.svg)](https://codecov.io/gh/dpayne/aerospike-cli)
+
+### Build and run the main target
 
 Use the following command to build and run the executable target.
 
 ```bash
-cmake -S main -B build/main
-cmake --build build/main
+cmake -B build
+cmake --build build
 ./build/main/ascli --help
 ```
 
@@ -13,12 +20,12 @@ cmake --build build/main
 Use the following commands from the project's root directory to run the test suite.
 
 ```bash
-cmake -S test -B build/test
-cmake --build build/test
-CTEST_OUTPUT_ON_FAILURE=1 cmake --build build/test --target test
+cmake -B build
+cmake --build build --target ascliTest
+CTEST_OUTPUT_ON_FAILURE=1 cmake --build build --target test
 
-# or simply call the executable: 
-./build/test/ascliTests
+# or simply call the executable:
+./build/test/ascliTest
 ```
 
 To collect code coverage information, run CMake with the `-DENABLE_TEST_COVERAGE=1` option.
@@ -29,13 +36,13 @@ Use the following commands from the project's root directory to check and fix C+
 This requires _clang-format_, _cmake-format_ and _pyyaml_ to be installed on the current system.
 
 ```bash
-cmake -S test -B build/test
+cmake -B build
 
 # view changes
-cmake --build build/test --target format
+cmake --build build --target format
 
 # apply changes
-cmake --build build/test --target fix-format
+cmake --build build --target fix-format
 ```
 
 See [Format.cmake](https://github.com/TheLartians/Format.cmake) for details.
@@ -46,8 +53,8 @@ The documentation is automatically built and [published](https://thelartians.git
 To manually build documentation, call the following command.
 
 ```bash
-cmake -S docs -B build/doc
-cmake --build build/doc --target GenerateDocs
+cmake -B build
+cmake --build build --target GenerateDocs
 # view the docs
 open build/doc/doxygen/html/index.html
 ```
@@ -60,7 +67,7 @@ The project also includes an `all` directory that allows building all targets at
 This is useful during development, as it exposes all subprojects to your IDE and avoids redundant builds of the library.
 
 ```bash
-cmake -S all -B build
+cmake -B build
 cmake --build build
 
 # run tests
@@ -77,12 +84,16 @@ cmake --build build --target GenerateDocs
 
 Sanitizers can be enabled by configuring CMake with `-DUSE_SANITIZER=<Address | Memory | MemoryWithOrigins | Undefined | Thread | Leak | 'Address;Undefined'>`.
 
-#### Static Analyzers
+#### Linter
 
-Static Analyzers can be enabled by setting `-DUSE_STATIC_ANALYZER=<clang-tidy | iwyu | cppcheck>`, or a combination of those in quotation marks, separated by semicolons.
-By default, analyzers will automatically find configuration files such as `.clang-format`.
+Enable clang tidy linter with `-DENABLE_LINTER=ON`. Specific static analyzers can be enabled by setting `-DENABLE_LINTER=<clang-tidy | iwyu | cppcheck>`, or a combination of those in quotation marks, separated by semicolons.
+By default, analyzers will automatically find configuration files such as `.clang-tidy`.
 Additional arguments can be passed to the analyzers by setting the `CLANG_TIDY_ARGS`, `IWYU_ARGS` or `CPPCHECK_ARGS` variables.
 
 #### Ccache
 
 Ccache can be enabled by configuring with `-DUSE_CCACHE=<ON | OFF>`.
+
+#### Static Build
+
+Enable fully static build with `-DENABLE_STATIC=ON`. This will trigger a full glibc build from source.

@@ -19,7 +19,8 @@ set_target_properties(
 add_dependencies(${PROJECT_MAIN_NAME} ${PROJECT_LIB_NAME})
 
 if (ENABLE_STATIC_BUILD)
-  target_link_libraries(${PROJECT_MAIN_NAME} -static ${PROJECT_NAME}::${PROJECT_LIB_NAME} cxxopts cli::cli resolv_nonshared m_nonshared mvec_nonshared pthread jemalloc pthread_nonshared c_nonshared rt_nonshared dl_nonshared)
+  target_link_libraries(${PROJECT_MAIN_NAME} -static ${PROJECT_NAME}::${PROJECT_LIB_NAME} cxxopts cli::cli resolv_nonshared m_nonshared c_nonshared pthread_nonshared jemalloc dl_nonshared rt_nonshared pthread)
+        set(PROJECT_LIBRARIES ${PROJECT_LIBRARIES} mcrypt lua ssl crypto m_nonshared jemalloc z xz c_nonshared pthread_nonshared jemalloc dl_nonshared rt_nonshared pthread)
 else()
   target_link_libraries(${PROJECT_MAIN_NAME} ${PROJECT_NAME}::${PROJECT_LIB_NAME} cxxopts cli::cli dl)
 endif()

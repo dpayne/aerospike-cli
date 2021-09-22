@@ -13,4 +13,4 @@ set(libz_version        "v1.2.11")
 set(openssl_version     "OpenSSL_1_1_1k")
 set(lua_version         "5.1.5")
 set(lua_md5             "2e115fe26e435e33b0d5c022e4490567") #Note: this is required due to a bug in cmake, if omitted lua will not build
-set(glibc_version       "glibc-2.34")
+set(glibc_version       "glibc-2.29")

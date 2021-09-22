@@ -19,7 +19,7 @@ CPMAddPackage(
 ExternalProject_Add(
   project_libuv
   PREFIX ${EXTERNAL_PROJECTS_DIR}
-  GIT_REPOSITORY "git@github.com:libuv/libuv.git"
+  GIT_REPOSITORY "https://github.com/libuv/libuv.git"
   GIT_TAG ${libuv_version}
   CMAKE_ARGS
     -DCMAKE_INSTALL_PREFIX:PATH=${EXTERNAL_PROJECTS_DIR}
@@ -43,7 +43,7 @@ set_property(
 ExternalProject_Add(
   project_aerospike
   PREFIX ${EXTERNAL_PROJECTS_DIR}
-  GIT_REPOSITORY "git@github.com:aerospike/aerospike-client-c.git"
+  GIT_REPOSITORY "https://github.com/aerospike/aerospike-client-c.git"
   GIT_TAG ${aerospike_version}
   DEPENDS project_libuv
   UPDATE_COMMAND ""
