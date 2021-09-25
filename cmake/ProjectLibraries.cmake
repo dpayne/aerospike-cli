@@ -1,5 +1,3 @@
-include(ExternalProject)
-
 # PackageProject.cmake will be used to make our target installable
 CPMAddPackage("gh:TheLartians/PackageProject.cmake@${package_project_version}")
 
@@ -22,17 +20,16 @@ ExternalProject_Add(
   GIT_REPOSITORY "https://github.com/libuv/libuv.git"
   GIT_TAG ${libuv_version}
   CMAKE_ARGS
-    -DCMAKE_INSTALL_PREFIX:PATH=${EXTERNAL_PROJECTS_DIR}
-    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-    -DBUILD_TESTING=OFF
     -DBUILD_SHARED_LIBS=OFF
-    -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=${CMAKE_INTERPROCEDURAL_OPTIMIZATION}
-    -DCMAKE_INSTALL_MESSAGE=LAZY
-    -DCMAKE_LD_FLAGS=${CMAKE_LD_FLAGS}
+    -DBUILD_TESTING=OFF
+    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
     -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}
     -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
     -DCMAKE_INSTALL_LIBDIR=lib
-    -DBUILD_SHARED_LIBS=OFF
+    -DCMAKE_INSTALL_MESSAGE=LAZY
+    -DCMAKE_INSTALL_PREFIX:PATH=${EXTERNAL_PROJECTS_DIR}
+    -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=${CMAKE_INTERPROCEDURAL_OPTIMIZATION}
+    -DCMAKE_LD_FLAGS=${CMAKE_LD_FLAGS}
 )
 add_library(uv STATIC IMPORTED)
 set_property(
@@ -66,3 +63,9 @@ set_property(
   TARGET aerospike PROPERTY IMPORTED_LOCATION
                             ${EXTERNAL_PROJECTS_DIR}/lib/${CMAKE_FIND_LIBRARY_PREFIXES}aerospike.a
 )
+
+if (ENABLE_STATIC_BUILD)
+    add_dependencies(project_aerospike project_openssl)
+endif()
+
+set(PROJECT_LIBRARIES fmt::fmt cli::cli aerospike uv z ${OPENSSL_LIBRARIES} ${PROJECT_LIBRARIES})

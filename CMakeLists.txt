@@ -3,6 +3,9 @@
 set(ROOT_PROJECT_NAME "ascli")
 cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 
+set(CMAKE_CXX_COMPILER "clang++")
+set(CMAKE_C_COMPILER "clang")
+
 # options
 option(ENABLE_TEST "Enable unit tests" ON)
 option(ENABLE_DOCS "Enable documentation generation" ON)
@@ -10,6 +13,11 @@ option(ENABLE_MAIN "Enable main executable" ON)
 option(ENABLE_STATIC_BUILD "Enable static build" OFF)
 option(ENABLE_LINTER "Enable linter" OFF)
 option(USE_CCACHE_BY_DEFAULT "Enable ccache" ON)
+
+# external dependencies
+set(EXTERNAL_PROJECTS_DIR ${CMAKE_BINARY_DIR}/_deps)
+set(EXTERNAL_PROJECTS_INCLUDE_DIR  ${EXTERNAL_PROJECTS_DIR}/include)
+set(EXTERNAL_PROJECTS_LIB_DIR ${EXTERNAL_PROJECTS_DIR}/lib)
 
 # always export compile commands
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -42,18 +50,23 @@ set(PROJECT_DOCS_NAME ${ROOT_PROJECT_NAME}Docs)
 
 # ---- General Compile Time Flags ----
 include(versions.cmake)
-include(cmake/ExternalDependencies.cmake)
+include(cmake/OpenSSL.cmake)
 include(cmake/BuildFlags.cmake)
 
 # ---- Add dependencies via CPM ----
 
+include(ExternalProject)
 include(cmake/tools.cmake)
 include(cmake/CPM.cmake)
-include(cmake/ProjectLibraries.cmake)
 
 if(ENABLE_STATIC_BUILD)
+  message("Building static executable")
   include(cmake/StaticBuild.cmake)
+else()
+  message("Building dynamic executable")
 endif()
+
+include(cmake/ProjectLibraries.cmake)
 
 # My default build all
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/src ${CMAKE_BINARY_DIR}/src)

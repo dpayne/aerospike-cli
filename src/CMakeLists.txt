@@ -45,7 +45,6 @@ else()
              -g3
              -DDEBUG
              -Wall
-             -Werror
              -O0
              -Wno-variadic-macros
     )
@@ -67,11 +66,7 @@ if (ENABLE_STATIC_BUILD)
   endforeach()
 endif()
 
-if (ENABLE_STATIC_BUILD)
-  target_link_libraries(${PROJECT_LIB_NAME} PRIVATE fmt::fmt cli::cli aerospike uv z ${OPENSSL_LIBRARIES} crypto jemalloc pthread dl)
-else()
-  target_link_libraries(${PROJECT_LIB_NAME} PRIVATE fmt::fmt cli::cli aerospike uv z ${OPENSSL_LIBRARIES} crypto)
-endif()
+target_link_libraries(${PROJECT_LIB_NAME} PRIVATE ${PROJECT_LIBRARIES})
 
 target_include_directories(
   ${PROJECT_LIB_NAME} PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>

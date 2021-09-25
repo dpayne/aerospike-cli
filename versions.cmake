@@ -8,6 +8,7 @@ set(cmake_format_version "1.7.0")
 set(package_project_version "1.6.0")
 
 # static build
+set(unwind_version      "v1.5")
 set(jemalloc_version    "5.2.0")
 set(libz_version        "v1.2.11")
 set(openssl_version     "OpenSSL_1_1_1k")
