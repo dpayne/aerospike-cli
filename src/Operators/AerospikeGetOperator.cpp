@@ -81,6 +81,7 @@ auto AerospikeGetOperator::print_record(const as_record* rec, const std::string&
         << "\"bins\":[";
     as_record_iterator it;
     as_record_iterator_init(&it, rec);
+    std::string prefix = "";
     while (as_record_iterator_has_next(&it)) {
         auto* bin = as_record_iterator_next(&it);
         if (!bin_name.empty()) {
@@ -89,7 +90,9 @@ auto AerospikeGetOperator::print_record(const as_record* rec, const std::string&
             }
         }
         if (bin != nullptr) {
+            out << prefix;
             print_bin(bin, out);
+            prefix = ", ";
         }
     }
     out << "]";
@@ -112,7 +115,7 @@ auto AerospikeGetOperator::val_to_string(as_bin_value* value) -> std::string {
         str.append(bin_str).append("\"");
     } else {
         auto* val_str = as_val_tostring(val);
-        auto str = std::string{val_str};
+        str = std::string{val_str};
 
         free(val_str);  // NOLINT
     }
